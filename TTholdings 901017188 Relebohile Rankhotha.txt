@@ -1,0 +1,366 @@
+RELEBOHILE 901017188 RANKHOTHA
+
+mysql> CREATE TABLE JobType (
+    -> JobTypeID INT PRIMARY KEY AUTO_INCREMENT, 
+    -> Type ENUM('Permanent', 'Part-Time') NOT NULL 
+    ->);   
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> CREATE TABLE Organization (
+    ->     OrganizationID INT PRIMARY KEY AUTO_INCREMENT, 
+    ->     Name VARCHAR(255) NOT NULL, 
+    ->     Address VARCHAR(255) NOT NULL, 
+    ->     PhoneNumber VARCHAR(20) NOT NULL UNIQUE, 
+    ->     BudgetNumber VARCHAR(50) NOT NULL UNIQUE 
+    ->);  
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> CREATE TABLE Person ( 
+    ->     PersonID INT PRIMARY KEY AUTO_INCREMENT, 
+    ->     Name VARCHAR(255) NOT NULL, 
+    ->     Address VARCHAR(255) NOT NULL, 
+    ->     PhoneNumber VARCHAR(20) NOT NULL UNIQUE, 
+    ->     BirthDate DATE NOT NULL 
+    ->);  
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> CREATE TABLE Employment (
+    ->     EmploymentID INT PRIMARY KEY AUTO_INCREMENT, 
+    ->     EmploymentDate DATE NOT NULL, 
+    ->     TerminationDate DATE, 
+    ->     Bonus DECIMAL(10,2) DEFAULT 0, 
+    ->     PersonID INT, 
+    ->     OrganizationID INT, 
+    ->     JobTypeID INT, 
+    ->     FOREIGN KEY (PersonID) REFERENCES Person(PersonID) ON DELETE CASCADE, 
+    ->     FOREIGN KEY (OrganizationID) REFERENCES Organization(OrganizationID) ON DELETE CASCADE, 
+    ->     FOREIGN KEY (JobTypeID) REFERENCES JobType(JobTypeID) ON DELETE CASCADE 
+    ->);
+Query OK, 0 rows affected (0.09 sec)
+
+mysql> CREATE TABLE Position ( 
+    ->     PositionID INT PRIMARY KEY AUTO_INCREMENT, 
+    ->     Title VARCHAR(255) NOT NULL, 
+    ->     StartDate DATE NOT NULL, 
+    ->     TerminationDate DATE, 
+    ->     Salary DECIMAL(10,2) NOT NULL, 
+    ->     OrganizationID INT, 
+    ->     PersonID INT, 
+    ->     FOREIGN KEY (OrganizationID) REFERENCES Organization(OrganizationID) ON DELETE CASCADE, 
+    ->     FOREIGN KEY (PersonID) REFERENCES Person(PersonID) ON DELETE CASCADE 
+    ->);   
+Query OK, 0 rows affected (0.08 sec)
+
+mysql> CREATE TABLE Employment_Log (
+    ->     LogID INT AUTO_INCREMENT PRIMARY KEY,
+    ->     EmploymentID INT,
+    ->     PersonID INT,
+    ->     OrganizationID INT,
+    ->     HiredAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ->     FOREIGN KEY (EmploymentID) REFERENCES Employment(EmploymentID) ON DELETE CASCADE
+    -> );
+Query OK, 0 rows affected (0.08 sec)
+
+mysql> CREATE TABLE Position_Log (
+    ->     LogID INT AUTO_INCREMENT PRIMARY KEY,
+    ->     PositionID INT,
+    ->     Title VARCHAR(255),
+    ->     DeletedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    -> );
+Query OK, 0 rows affected (0.05 sec)
+
+INSERT INTO JobType (Type) VALUES 
+ ('Permanent'), 
+ ('Part-Time');    
+
+INSERT INTO Organization (Name, Address, PhoneNumber, BudgetNumber) VALUES
+('Lesotho Water Authority', 'Maseru, Industrial Area', '+26660012345', 'BUDG001'),
+('Morija Printing Works', 'Morija, Main Road', '+26660023456', 'BUDG002'),
+('Butha-Buthe Textiles', 'Butha-Buthe, Near Bus Stop', '+26660034567', 'BUDG003'),
+('Teyateyaneng Brewery', 'Teyateyaneng, Industrial Zone', '+26660045678', 'BUDG004'),
+('Leribe Mining Co.', 'Leribe, Mine Road', '+26660056789', 'BUDG005'),
+('Mafeteng Telecom', 'Mafeteng, Main Street', '+26660067890', 'BUDG006'),
+('Mohale Dam Authority', 'Mohale, Dam Site', '+26660078901', 'BUDG007'),
+('Qacha’s Nek Farmers Union', 'Qacha’s Nek, Market Street', '+26650012345', 'BUDG008'),
+('Quthing Transport', 'Quthing, Bus Terminal', '+26650023456', 'BUDG009'),
+('Mokhotlong Wool Exporters', 'Mokhotlong, Wool Center', '+26650034567', 'BUDG010'),
+('Maputsoe Traders', 'Maputsoe, Industrial Area', '+26650045678', 'BUDG011'),
+('Thaba-Tseka Forestry', 'Thaba-Tseka, Mountain Road', '+26650056789', 'BUDG012');
+
+INSERT INTO Person (Name, Address, PhoneNumber, BirthDate) VALUES
+('Thabo Mofokeng', 'Maseru, Thetsane', '+26660098765', '2001-06-15'),
+('Palesa Sekhonyana', 'Maseru, Katlehong', '+26660087654', '2003-02-21'),
+('Mpho Leqele', 'Butha-Buthe, Ha Motloheloa', '+26660076543', '1999-11-30'),
+('Nthabiseng Makoanyane', 'Teyateyaneng, Ha Ramabanta', '+26660065432', '2004-07-19'),
+('Tshepo Thabane', 'Leribe, Ha ’Mamathe', '+26660054321', '1998-03-10'),
+('Mokete Nthongoa', 'Mafeteng, Ha Lebona', '+26660043210', '2000-12-05'),
+('Lerato Moeketsi', 'Mohale, Ha Ramokoatsi', '+26650098765', '2002-09-28'),
+('Katleho Seutloali', 'Qacha’s Nek, Ha Mpiti', '+26650087654', '1997-04-17'),
+('Nthabiseng Monaheng', 'Quthing, Ha Raliemere', '+26650076543', '1995-08-09'),
+('Teboho Ntsane', 'Mokhotlong, Ha Mphutlane', '+26650065432', '2001-05-14'),
+('Sello Khoeli', 'Maputsoe, Ha Tikoe', '+26650054321', '2003-01-02'),
+('Masechaba Molapo', 'Thaba-Tseka, Ha Mosotho', '+26650043210', '1996-10-23');
+
+INSERT INTO Employment (EmploymentDate, TerminationDate, Bonus, PersonID, OrganizationID, JobTypeID) VALUES
+('2020-01-10', NULL, 5000.00, 1, 1, 1),
+('2019-05-20', '2023-12-01', 3500.00, 2, 2, 1),
+('2018-08-15', NULL, 4200.00, 3, 3, 1),
+('2021-07-07', NULL, 2000.00, 4, 4, 2),
+('2017-09-23', '2022-05-30', 5000.00, 5, 5, 1),
+('2022-03-11', NULL, 1800.00, 6, 6, 2),
+('2020-10-01', NULL, 2700.00, 7, 7, 1),
+('2016-06-14', NULL, 3900.00, 8, 8, 1),
+('2015-12-09', '2021-11-15', 5500.00, 9, 9, 1),
+('2019-02-28', NULL, 3200.00, 10, 10, 2),
+('2023-01-19', NULL, 2500.00, 11, 11, 2),
+('2014-04-05', '2020-08-30', 4600.00, 12, 12, 1);
+
+INSERT INTO Position (Title, StartDate, TerminationDate, Salary, OrganizationID, PersonID) VALUES
+('Software Engineer', '2020-01-10', NULL, 20000.00, 1, 1),
+('Accountant', '2019-05-20', '2023-12-01', 15000.00, 2, 2),
+('Production Manager', '2018-08-15', NULL, 18000.00, 3, 3),
+('Sales Representative', '2021-07-07', NULL, 12000.00, 4, 4),
+('HR Manager', '2017-09-23', '2022-05-30', 16000.00, 5, 5),
+('IT Technician', '2022-03-11', NULL, 14000.00, 6, 6),
+('Civil Engineer', '2020-10-01', NULL, 17500.00, 7, 7),
+('Marketing Executive', '2016-06-14', NULL, 16500.00, 8, 8),
+('Operations Supervisor', '2015-12-09', '2021-11-15', 15500.00, 9, 9),
+('Logistics Coordinator', '2019-02-28', NULL, 13500.00, 10, 10),
+('Warehouse Manager', '2023-01-19', NULL, 12500.00, 11, 11),
+('Forestry Officer', '2014-04-05', '2020-08-30', 14500.00, 12, 12);
+
+1. Views for Person Table
+
+View 1: Get all person details (excluding phone for privacy)
+
+CREATE VIEW Person_Details AS
+SELECT PersonID, Name, Address, BirthDate
+FROM Person;
+
+View 2:   Get people born after the year 2000
+ 
+CREATE VIEW Young_Employees AS
+SELECT PersonID, Name, BirthDate
+FROM Person
+WHERE BirthDate >= '2000-01-01';
+
+  2. Views for Organization Table
+  
+View 1: Show organization names and budgets only   
+
+CREATE VIEW Organization_Budget AS
+SELECT OrganizationID, Name, BudgetNumber
+FROM Organization;
+
+ View 2: Show organizations and their contact details
+
+CREATE VIEW Organization_Contacts AS
+SELECT OrganizationID, Name, Address, PhoneNumber
+FROM Organization;
+
+3. Views for Employment Table
+
+View 1: Show active employees (those without termination date)  
+
+CREATE VIEW Active_Employment AS
+SELECT EmploymentID, PersonID, OrganizationID, EmploymentDate, Bonus
+FROM Employment
+WHERE TerminationDate IS NULL;
+
+View 2: Show all employment history including terminations  
+
+CREATE VIEW Employment_History AS
+SELECT EmploymentID, PersonID, OrganizationID, EmploymentDate, TerminationDate, Bonus
+FROM Employment;
+
+  Views for Position Table
+
+View 1: Show current active positions
+
+CREATE VIEW Active_Positions AS
+SELECT PositionID, Title, StartDate, Salary, OrganizationID, PersonID
+FROM Position
+WHERE TerminationDate IS NULL;
+
+View 2: Show salary details of all positions
+
+CREATE VIEW Position_Salaries AS
+SELECT PositionID, Title, Salary
+FROM Position;
+
+Views for JobType Table
+View 1: Show job types count
+  
+CREATE VIEW JobType_Count AS
+SELECT Type, COUNT(*) AS Total
+FROM JobType
+JOIN Employment ON JobType.JobTypeID = Employment.JobTypeID
+GROUP BY Type;
+
+View 2: Show employees categorized by job type
+
+CREATE VIEW JobType_Employees AS
+SELECT EmploymentID, PersonID, OrganizationID, JobType.Type
+FROM Employment
+JOIN JobType ON Employment.JobTypeID = JobType.JobTypeID;
+
+SELECT * FROM Person_Details;
+SELECT * FROM Active_Employment;
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE TRIGGER Prevent_Employee_Delete
+    -> BEFORE DELETE ON Person
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     IF EXISTS (SELECT 1 FROM Employment WHERE PersonID = OLD.PersonID AND TerminationDate IS NULL) THEN
+    ->         SIGNAL SQLSTATE '45000'
+    ->         SET MESSAGE_TEXT = 'Cannot delete an employee who is still employed.';
+    ->     END IF;
+    -> END $$
+Query OK, 0 rows affected (0.02 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE TRIGGER Log_Position_Deletion
+    -> AFTER DELETE ON Position
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     INSERT INTO Position_Log (PositionID, Title, DeletedAt)
+    ->     VALUES (OLD.PositionID, OLD.Title, NOW());
+    -> END $$
+Query OK, 0 rows affected (0.02 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE TRIGGER Prevent_Salary_Decrease
+    -> BEFORE UPDATE ON Position
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     IF NEW.Salary < OLD.Salary AND NEW.Salary != OLD.Salary THEN
+    ->         SIGNAL SQLSTATE '45000'
+    ->         SET MESSAGE_TEXT = 'Salary cannot be decreased.';
+    ->     END IF;
+    -> END $$
+Query OK, 0 rows affected (0.21 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE TRIGGER Auto_Update_Employment_Termination
+    -> AFTER UPDATE ON Position
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     IF OLD.TerminationDate IS NULL AND NEW.TerminationDate IS NOT NULL THEN
+    ->         UPDATE Employment
+    ->         SET TerminationDate = NEW.TerminationDate
+    ->         WHERE PersonID = NEW.PersonID AND OrganizationID = NEW.OrganizationID;
+    ->     END IF;
+    -> END $$
+Query OK, 0 rows affected (0.02 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE TRIGGER Assign_Default_JobType
+    -> BEFORE INSERT ON Employment
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     IF NEW.JobTypeID IS NULL THEN
+    ->         SET NEW.JobTypeID = (SELECT JobTypeID FROM JobType WHERE Type = 'Part-Time' LIMIT 1);
+    ->     END IF;
+    -> END $$
+Query OK, 0 rows affected (0.02 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE TRIGGER Log_New_Employment
+    -> AFTER INSERT ON Employment
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     INSERT INTO Employment_Log (EmploymentID, PersonID, OrganizationID, HiredAt)
+    ->     VALUES (NEW.EmploymentID, NEW.PersonID, NEW.OrganizationID, NOW());
+    -> END $$
+Query OK, 0 rows affected (0.02 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> SELECT * FROM Employment_Log;
+Empty set (0.01 sec)
+
+mysql> SELECT * FROM Position_Log;
+Empty set (0.00 sec)
+
+mysql> INSERT INTO Employment (EmploymentDate, PersonID, OrganizationID, JobTypeID)
+    -> VALUES ('2025-03-25', 7, 4, 2);
+Query OK, 1 row affected (0.04 sec)
+
+mysql> SELECT * FROM Employment_Log;
++-------+--------------+----------+----------------+---------------------+
+| LogID | EmploymentID | PersonID | OrganizationID | HiredAt             |
++-------+--------------+----------+----------------+---------------------+
+|     1 |           20 |        7 |              4 | 2025-03-26 06:08:02 |
++-------+--------------+----------+----------------+---------------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT * FROM Position WHERE PositionID = 3;
+Empty set (0.01 sec)
+
+mysql> INSERT INTO Position (PositionID, Title, Salary)
+    -> VALUES (3, 'Software Engineer', 50000);
+ERROR 1364 (HY000): Field 'StartDate' doesn't have a default value
+mysql> INSERT INTO Position (PositionID, Title, Salary, StartDate)
+    -> VALUES (3, 'Software Engineer', 50000, '2025-03-25');
+Query OK, 1 row affected (0.01 sec)
+
+mysql> SELECT * FROM Position WHERE PositionID = 3;
++------------+-------------------+------------+-----------------+----------+----------------+----------+
+| PositionID | Title             | StartDate  | TerminationDate | Salary   | OrganizationID | PersonID |
++------------+-------------------+------------+-----------------+----------+----------------+----------+
+|          3 | Software Engineer | 2025-03-25 | NULL            | 50000.00 |           NULL |     NULL |
++------------+-------------------+------------+-----------------+----------+----------------+----------+
+1 row in set (0.00 sec)
+
+mysql> DELETE FROM Position WHERE PositionID = 3;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> SELECT * FROM Position_Log;
++-------+------------+-------------------+---------------------+
+| LogID | PositionID | Title             | DeletedAt           |
++-------+------------+-------------------+---------------------+
+|     1 |          3 | Software Engineer | 2025-03-26 06:09:49 |
++-------+------------+-------------------+---------------------+
+1 row in set (0.00 sec)
+
+
+mysql> GRANT DELETE, UPDATE ON *.* TO 'admin'@'localhost';
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> CREATE USER 'hr_user'@'localhost' IDENTIFIED BY 'pass123';
+ERROR 1396 (HY000): Operation CREATE USER failed for 'hr_user'@'localhost'
+mysql> CREATE USER 'hr_user'@'localhost' IDENTIFIED BY 'password';
+ERROR 1396 (HY000): Operation CREATE USER failed for 'hr_user'@'localhost'
+mysql> SELECT user, host FROM mysql.user WHERE user = 'hr_user';
++---------+-----------+
+| user    | host      |
++---------+-----------+
+| hr_user | localhost |
++---------+-----------+
+1 row in set (0.00 sec)
+
+mysql> DROP USER 'hr_user'@'localhost';
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> CREATE USER 'hr_user'@'localhost' IDENTIFIED BY '123word';
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> GRANT SELECT ON JobType TO 'hr_user'@'localhost';
+Query OK, 0 rows affected (0.01 sec)
+
